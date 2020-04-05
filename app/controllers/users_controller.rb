@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+    def index
+        @users=User.all
+    end
 
     def new
         @user = User.new
@@ -8,15 +11,18 @@ class UsersController < ApplicationController
     
         # @user = User.find_or_create_by(name: params[:user][:name])
         @user = User.create(user_params)
-        if @user && @user.authenticate?(params[:user][:password])
+        if @user && @user.authenticate(params[:user][:password])
             redirect_to user_path(@user)
+            # binding.pry
         else
             render :new
         end
     end
 
     def show
-        @user = User.find(params[:id])
+        # binding.pry
+        @user = User.find(params[:user])
+        
     end
 
     private
