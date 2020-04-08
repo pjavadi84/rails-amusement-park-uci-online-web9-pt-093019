@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+    skip_before_action :verified_user, only: [:new, :create]
+    
     def index
         @users=User.all
     end
@@ -8,27 +10,23 @@ class UsersController < ApplicationController
     end
 
     def create
-    
-        # @user = User.find_or_create_by(name: params[:user][:name])
-        @user = User.create(user_params)
-        if @user && @user.authenticate(params[:user][:password])
+       if (@user = User.create(user_params))
+            session[:user_id] = @user.id
             redirect_to user_path(@user)
-            # binding.pry
         else
-            render :new
+            render 'new'
         end
     end
 
     def show
+        @user = User.find_by(id: params[:id])
         # binding.pry
-        @user = User.find(params[:user])
-        
     end
 
     private
 
     def user_params
-        params.require(:user).permit(:name, :happiness, :nausea, :height, :password, :password_confirmation)
+        params.require(:user).permit(:name, :admin, :happiness, :nausea, :tickets, :height, :password)
     end
 
 end
